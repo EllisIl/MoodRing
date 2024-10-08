@@ -28,35 +28,44 @@ export default function Home() {
   const [newMessage, setNewMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
-  const [chatId, setChatId] = useState(1);  // Assuming chatId is set to 1 initially
+  const [chatId, setChatId] = useState(null); // Start with no chat selected
   const userId = 1; // Assuming userId is 1 for the current user
 
-  // Fetch chat messages on component mount
+  // Fetch chats and users on component mount
   useEffect(() => {
-    const fetchMessages = async () => {
-      const data = await fetchData(`/api/chats/${chatId}/messages`);
-      setMessages(data.messages);
+    const fetchChatsAndUsers = async () => {
+      const [chatsData, usersData] = await Promise.all([
+        fetchData("/api/chats"),
+        fetchData("/api/users"),
+      ]);
+      setChats(chatsData);
+      setUsers(usersData);
     };
 
-    const fetchUsers = async () => {
-      const data = await fetchData("/api/users");
-      setUsers(data);
-    };
+    fetchChatsAndUsers();
+  }, []);
 
-    const fetchChats = async () => {
-      const data = await fetchData("/api/chats");
-      setChats(data);
-    };
+  // Fetch messages when `chatId` changes
+  useEffect(() => {
+    if (chatId) {
+      const fetchMessages = async () => {
+        const data = await fetchData(`/api/chats/${chatId}`);
+        setMessages(data.messages);
+      };
 
-    fetchMessages();
-    fetchUsers();
-    fetchChats();
+      fetchMessages();
+    }
   }, [chatId]);
+
+  const handleChannelClick = (id) => {
+    setChatId(id); // Update chatId
+    setMessages([]); // Clear previous messages to prevent stale data
+  };
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
       const newMessageData = await sendMessage(chatId, userId, newMessage);
-      setMessages([...messages, newMessageData]);
+      setMessages((prevMessages) => [...prevMessages, newMessageData]);
       setNewMessage(""); // Clear input field after sending the message
     }
   };
@@ -71,11 +80,11 @@ export default function Home() {
   const getUserImage = (user) => {
     switch (user) {
       case "User1":
-        return "/images/user1.jpg";
+        return "/images/dog1.jpg";
       case "User2":
-        return "/images/user2.jpg";
+        return "/images/dog2.jpg";
       case "User3":
-        return "/images/user3.jpg";
+        return "/images/dog3.jpg";
       case "You":
         return "/images/you.jpg"; // Image for the current user
       default:
@@ -97,7 +106,7 @@ export default function Home() {
                 width={40}
                 height={40}
                 className={styles.channelImage}
-                onClick={() => setChatId(chat.chatId)} // Set chatId on channel click
+                onClick={() => handleChannelClick(chat.chatId)} // Update chatId on channel click
               />
             </div>
           ))}
@@ -110,7 +119,8 @@ export default function Home() {
         <div className={styles.channelList}>
           {users.map((user) => (
             <div key={user.userId} className={styles.channel}>
-              <span className={styles.userName}>{user.username}</span><br />
+              <span className={styles.userName}>{user.username}</span>
+              <br />
               <span className={styles.lastMessagePreview}>
                 {getLastMessage(user.username)}
               </span>
@@ -158,3 +168,4 @@ export default function Home() {
     </div>
   );
 }
+
