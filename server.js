@@ -23,6 +23,15 @@ app.prepare().then(() => {
     });
   });
 
+    // Test the connection
+  pool.connect((err, client, release) => {
+    if (err) {
+      return console.error('Error acquiring client', err.stack);
+    }
+    console.log('Connected to the database');
+    release();
+  });
+
   httpServer
     .once("error", (err) => {
       console.error(err);
