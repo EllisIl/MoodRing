@@ -61,6 +61,13 @@ export default function Home() {
     }
   };
 
+  // Handle "Enter" key press
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && newMessage.trim()) {
+      handleSendMessage();
+    }
+  };
+
   const getLastMessage = (user) => {
     const userMessages = messages.filter((message) => message.user === user);
     return userMessages.length > 0
@@ -148,6 +155,7 @@ export default function Home() {
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyPress} 
             className={styles.input}
           />
           <button onClick={handleSendMessage} className={styles.sendButton}>
