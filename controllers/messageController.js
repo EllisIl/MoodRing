@@ -1,12 +1,12 @@
 import { query } from '../database/index.js';
 
 // Add a new message to a chat
-export const addMessage = async (req, res) => {
-  const { chatId, userId, content } = req.body;
+const addMessage = async (req, res) => {
+  const { chatId, userId, content, emotion } = req.body;
   try {
     const result = await query(
-      "INSERT INTO messages (chat_id, user_id, content, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
-      [chatId, userId, content]
+      "INSERT INTO messages (chat_id, user_id, content, created_at, emotion) VALUES ($1, $2, $3, NOW(), $4) RETURNING *",
+      [chatId, userId, content, emotion]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -14,3 +14,5 @@ export const addMessage = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+export { addMessage }

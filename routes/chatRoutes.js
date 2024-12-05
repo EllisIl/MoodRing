@@ -7,6 +7,6 @@ const router = express.Router();
 router.get('/', getAllChats);
 
 // Get messages for a specific chat
-router.get('/:chatId/messages', getMessagesByChatId);
+router.get('/:chatId', getMessagesByChatId);
 
 export default router;
