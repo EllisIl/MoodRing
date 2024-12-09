@@ -1,7 +1,7 @@
 import { query } from '../database/index.js';
 
 // Get all chats
-export const getAllChats = async (req, res) => {
+const getAllChats = async (req, res) => {
   try {
     const result = await query("SELECT * FROM chats");
     res.status(200).json(result.rows);
@@ -12,7 +12,7 @@ export const getAllChats = async (req, res) => {
 };
 
 // Get messages for a specific chat
-export const getMessagesByChatId = async (req, res) => {
+const getMessagesByChatId = async (req, res) => {
   const { chatId } = req.params;
   try {
     const result = await query("SELECT * FROM messages WHERE chat_id = $1", [chatId]);
@@ -22,3 +22,5 @@ export const getMessagesByChatId = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+export { getAllChats, getMessagesByChatId };
