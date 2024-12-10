@@ -34,7 +34,7 @@ export default function Home() {
   // Fetch chat messages on component mount
   useEffect(() => {
     const fetchMessages = async () => {
-      const data = await fetchData(`/api/chats/${chatId}/messages`);
+      const data = await fetchData(`/api/chats/${chatId}`);
       setMessages(data.messages);
     };
 
@@ -71,14 +71,6 @@ export default function Home() {
 
   const getUserImage = (user) => {
     switch (user) {
-      case "User1":
-        return "/images/user1.jpg";
-      case "User2":
-        return "/images/user2.jpg";
-      case "User3":
-        return "/images/user3.jpg";
-      case "You":
-        return "/images/you.jpg"; // Image for the current user
       default:
         return "/images/default.jpg"; // Default image
     }
@@ -97,6 +89,9 @@ export default function Home() {
                 width={40}
                 height={40}
                 className={styles.channelImage}
+                onClick={() => {
+                  setChatId(chat.chatId)
+                }} // Set chatId on channel click 
               />
             </div>
         </div>
