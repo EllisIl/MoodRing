@@ -61,6 +61,11 @@ export default function Home() {
       const newMessageData = await sendMessage(chatId, userId, newMessage);
       setMessages([...messages, newMessageData]);
       setNewMessage(""); // Clear input field after sending the message
+
+      setTimeout(() => {
+        const messageView = document.getElementById("message-view");
+        messageView.scrollTop = messageView.scrollHeight;
+      }, 50);
     }
   };
 
@@ -124,7 +129,7 @@ export default function Home() {
       {/* Main Area: Conversations */}
       <main className={styles.main}>
         <h2 className={styles.title}>Conversation</h2>
-        <div className={styles.messageList}>
+        <div id="message-view" className={styles.messageList}>
           {messages.map((message) => (
             <div key={message.messageId} className={styles.message}>
               <div className={styles.userImage}>
