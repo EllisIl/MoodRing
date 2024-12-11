@@ -12,24 +12,33 @@ const fetchData = async (url) => {
   return data;
 };
 
-const sendMessage = async (chatId, userId, content) => {
+const sendMessage = async (chatId, userId, content, emotion) => {
   const response = await fetch(`/api/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ chatId, userId, content }),
+    body: JSON.stringify({ chatId, userId, content, emotion }),
   });
   const data = await response.json();
   return data;
 };
+
+const emotions = [
+  { name: "Happy", color: "#FCE78A" }, // Softer yellow
+  { name: "Sad", color: "#A5C9E0" },  // Darker pastel blue
+  { name: "Angry", color: "#F4A6A6" }, // Richer pastel red
+  { name: "Neutral", color: "#D4D4D4" }, // Neutral gray
+];
+
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
-  const [chatId, setChatId] = useState(1);  // Assuming chatId is set to 1 initially
+  const [chatId, setChatId] = useState(1); // Assuming chatId is set to 1 initially
+  const [selectedEmotion, setSelectedEmotion] = useState("Neutral");
   const userId = 1; // Assuming userId is 1 for the current user
   const searchParams = useSearchParams();
   const username = searchParams.get("username") || "Guest";
@@ -58,9 +67,14 @@ export default function Home() {
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const newMessageData = await sendMessage(chatId, userId, newMessage);
+      const newMessageData = await sendMessage(chatId, userId, newMessage, selectedEmotion);
       setMessages([...messages, newMessageData]);
       setNewMessage(""); // Clear input field after sending the message
+
+      setTimeout(() => {
+        const messageView = document.getElementById("message-view");
+        messageView.scrollTop = messageView.scrollHeight;
+      }, 50);
     }
   };
 
@@ -89,22 +103,20 @@ export default function Home() {
     <div className={styles.page}>
       {/* First Sidebar: Channels */}
       <aside className={styles.sidenavChannels}>
-        <h2>Channels</h2>
+        <h2>Profile</h2>
         <div className={styles.channelList}>
-          {chats.map((chat) => (
-            <div key={chat.chatId} className={styles.channel}>
-              <Image
-                src="/images/dog1.jpg"
-                alt={chat.chatName}
-                width={40}
-                height={40}
-                className={styles.channelImage}
-                onClick={() => {
-                  setChatId(chat.chatId)
-                }} // Set chatId on channel click
-              />
-            </div>
-          ))}
+          <div className={styles.channel}>
+            <Image
+              src="/images/dog1.jpg"
+              alt="profile picture"
+              width={40}
+              height={40}
+              className={styles.channelImage}
+              onClick={() => {
+                setChatId(chat.chatId);
+              }}
+            />
+          </div>
         </div>
       </aside>
 
@@ -114,7 +126,8 @@ export default function Home() {
         <div className={styles.channelList}>
           {users.map((user) => (
             <div key={user.userId} className={styles.channel}>
-              <span className={styles.userName}>{user.username}</span><br />
+              <span className={styles.userName}>{user.username}</span>
+              <br />
               <span className={styles.lastMessagePreview}>
                 {getLastMessage(user.username)}
               </span>
@@ -126,22 +139,27 @@ export default function Home() {
       {/* Main Area: Conversations */}
       <main className={styles.main}>
         <h2 className={styles.title}>Conversation</h2>
-        <div className={styles.messageList}>
+        <div id="message-view" className={styles.messageList}>
           {messages.map((message) => (
-            <div key={message.messageId} className={styles.message}>
-              <div className={styles.userImage}>
-                <Image
-                  src={getUserImage(message.username)}
-                  alt={message.username}
-                  width={40}
-                  height={40}
-                  className={styles.channelImage}
-                />
-              </div>
+            <div
+              key={message.messageId}
+              className={styles.message}
+              style={{
+                backgroundColor: emotions.find((e) => e.name === message.emotion)?.color || "#fff",
+              }}
+            >
               <div className={styles.messageInfo}>
                 <span className={styles.userName}>{message.username}</span>
                 <span className={styles.lastMessage}>{message.content}</span>
               </div>
+              <span className={styles.userName}>
+                {new Date(message.created_at).toLocaleString("en-US", {
+                  timeZone: "America/Phoenix",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}
+              </span>
             </div>
           ))}
         </div>
@@ -152,14 +170,38 @@ export default function Home() {
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyPress} 
+            onKeyDown={handleKeyPress}
             className={styles.input}
+            style={{
+              backgroundColor: emotions.find((e) => e.name === selectedEmotion).color,
+            }}
           />
           <button onClick={handleSendMessage} className={styles.sendButton}>
             Send
           </button>
         </div>
       </main>
+
+      {/* Emotion Selector */}
+      <div className={styles.emotionSelector}>
+        {emotions.map((emotion) => (
+          <button
+            key={emotion.name}
+            onClick={() => setSelectedEmotion(emotion.name)}
+            style={{
+              backgroundColor: emotion.color,
+              color: "#333",
+              border: selectedEmotion === emotion.name ? "2px solid #555" : "1px solid #ccc",
+              padding: "10px 15px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+            className={styles.emotionButton}
+          >
+            {emotion.name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
