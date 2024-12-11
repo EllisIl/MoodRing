@@ -180,3 +180,37 @@
     color: #777;
     margin-top: 4px;
 }
+
+.emotionSelector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.emotionButton {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #bbb;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.emotionButton:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.05);
+}
+
+.emotionButton.active {
+    border: 2px solid #444;
+    background-color: #dcdcdc;
+}
