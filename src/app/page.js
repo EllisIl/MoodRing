@@ -89,13 +89,12 @@ export default function Home() {
     <div className={styles.page}>
       {/* First Sidebar: Channels */}
       <aside className={styles.sidenavChannels}>
-        <h2>Channels</h2>
+        <h2>Profile</h2>
         <div className={styles.channelList}>
-          {chats.map((chat) => (
-            <div key={chat.chatId} className={styles.channel}>
+            <div className={styles.channel}>
               <Image
                 src="/images/dog1.jpg"
-                alt={chat.chatName}
+                alt="profile picture"
                 width={40}
                 height={40}
                 className={styles.channelImage}
@@ -104,7 +103,6 @@ export default function Home() {
                 }} // Set chatId on channel click
               />
             </div>
-          ))}
         </div>
       </aside>
 
@@ -142,6 +140,7 @@ export default function Home() {
                 <span className={styles.userName}>{message.username}</span>
                 <span className={styles.lastMessage}>{message.content}</span>
               </div>
+              <span className={styles.userName}>{new Date(message.created_at).toLocaleString('en-US', { timeZone: 'America/Phoenix', hour: '2-digit', minute: '2-digit', hour12: false })}</span>
             </div>
           ))}
         </div>
@@ -152,7 +151,7 @@ export default function Home() {
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyPress} 
+            onKeyDown={handleKeyPress}
             className={styles.input}
           />
           <button onClick={handleSendMessage} className={styles.sendButton}>
