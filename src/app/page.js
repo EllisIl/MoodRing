@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "./page.module.css";
+import { useSearchParams } from "next/navigation";
 
 // Helper function to fetch data from the backend
 const fetchData = async (url) => {
@@ -30,6 +31,8 @@ export default function Home() {
   const [chats, setChats] = useState([]);
   const [chatId, setChatId] = useState(1);  // Assuming chatId is set to 1 initially
   const userId = 1; // Assuming userId is 1 for the current user
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username") || "Guest";
 
   // Fetch chat messages on component mount
   useEffect(() => {
@@ -45,7 +48,6 @@ export default function Home() {
 
     const fetchChats = async () => {
       const data = await fetchData("/api/chats");
-      data.
       setChats(data);
     };
 
@@ -59,6 +61,13 @@ export default function Home() {
       const newMessageData = await sendMessage(chatId, userId, newMessage);
       setMessages([...messages, newMessageData]);
       setNewMessage(""); // Clear input field after sending the message
+    }
+  };
+
+  // Handle "Enter" key press
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && newMessage.trim()) {
+      handleSendMessage();
     }
   };
 
@@ -91,7 +100,7 @@ export default function Home() {
                 className={styles.channelImage}
                 onClick={() => {
                   setChatId(chat.chatId)
-                }} // Set chatId on channel click 
+                }} // Set chatId on channel click
               />
             </div>
         </div>
@@ -99,7 +108,7 @@ export default function Home() {
 
       {/* Second Sidebar: Users */}
       <aside className={styles.sidenavUsers}>
-        <h2>Users</h2>
+        <h2>Welcome, {username}!</h2>
         <div className={styles.channelList}>
           {users.map((user) => (
             <div key={user.userId} className={styles.channel}>
@@ -142,6 +151,7 @@ export default function Home() {
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyPress}
             className={styles.input}
           />
           <button onClick={handleSendMessage} className={styles.sendButton}>
