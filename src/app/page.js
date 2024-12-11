@@ -143,15 +143,6 @@ export default function Home() {
                 backgroundColor: emotions.find((e) => e.name === message.emotion)?.color || "#fff",
               }}
             >
-              <div className={styles.userImage}>
-                <Image
-                  src={getUserImage(message.username)}
-                  alt={message.username}
-                  width={40}
-                  height={40}
-                  className={styles.channelImage}
-                />
-              </div>
               <div className={styles.messageInfo}>
                 <span className={styles.userName}>{message.username}</span>
                 <span className={styles.lastMessage}>{message.content}</span>
