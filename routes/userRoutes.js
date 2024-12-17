@@ -3,7 +3,10 @@ import { getAllUsers } from '../controllers/userController.js';
 
 const router = express.Router();
 
-// Get all users
+// GET get all users
 router.get('/', getAllUsers);
+
+// POST add a user
+router.post('/add', addUser);
 
 export default router;
